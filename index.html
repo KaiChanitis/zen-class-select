@@ -212,18 +212,18 @@
 </div>
 
 <script>
-  // 請將下方替換為您部署的 GAS Web App 網址
+  // ⚠️ 請將下方替換為您部署的 GAS Web App 網址 ⚠️
   const GAS_URL = "YOUR_GAS_WEB_APP_URL";
 
   const form = document.getElementById('surveyForm');
   const submitBtn = document.getElementById('submitBtn');
   const resultTableBody = document.getElementById('resultTableBody');
 
-  // 頁面載入時先拉取雲端資料
+  // 頁面開啟時自動從雲端載入各學長填寫的結果
   window.addEventListener('load', fetchCloudData);
 
   function fetchCloudData() {
-    if (GAS_URL === "YOUR_GAS_WEB_APP_URL") return;
+    if (GAS_URL === "YOUR_GAS_WEB_APP_URL" || !GAS_URL) return;
     
     fetch(GAS_URL)
       .then(res => res.json())
@@ -240,8 +240,8 @@
   form.addEventListener('submit', function(e) {
     e.preventDefault();
 
-    if (GAS_URL === "YOUR_GAS_WEB_APP_URL") {
-      alert("請先設定 GAS 試算表連線網址！");
+    if (GAS_URL === "YOUR_GAS_WEB_APP_URL" || !GAS_URL) {
+      alert("請先將程式碼中的 YOUR_GAS_WEB_APP_URL 替換為您的 Google 試算表連線網址！");
       return;
     }
 
@@ -262,7 +262,7 @@
     .then(res => {
       alert(`已成功送出！感謝 ${name} 學長。`);
       form.reset();
-      fetchCloudData(); // 重新整理雲端結果
+      fetchCloudData(); // 送出成功後立即更新畫面下方的統計列表
     })
     .catch(err => {
       alert("傳送失敗，請重試或聯繫管理者。");
