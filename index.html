@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>夜間高級班 - 升班意願調查</title>
+  <style>
+    :root {
+      --primary-color: #4a6fa5;
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background: var(--card-bg);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    h2 {
+      text-align: center;
+      color: var(--primary-color);
+      margin-bottom: 8px;
+    }
+    p.subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 0.9em;
+      margin-bottom: 25px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    select, input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .radio-option {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .radio-option:hover {
+      background-color: #f0f4f8;
+    }
+    .radio-option input {
+      margin-right: 10px;
+    }
+    button.submit-btn {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button.submit-btn:hover {
+      opacity: 0.9;
+    }
+    .stats-section {
+      margin-top: 30px;
+      border-top: 2px dashed #e0e0e0;
+      padding-top: 20px;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .stat-card {
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 6px;
+      text-align: center;
+      border-left: 4px solid var(--primary-color);
+    }
+    .stat-number {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 0.9em;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>夜間高級班 升班意願調查</h2>
+  <p class="subtitle">精進修行・福慧增長</p>
+
+  <!-- 填寫表單 -->
+  <form id="surveyForm">
+    <div class="form-group">
+      <label for="studentName">1. 請選擇您的姓名：</label>
+      <select id="studentName" required>
+        <option value="">-- 請選擇姓名 (法名) --</option>
+        <option value="詹凱涵 (傳涵)">詹凱涵 (傳涵)</option>
+        <option value="劉榮倍 (法泉)">劉榮倍 (法泉)</option>
+        <option value="劉哲志 (傳登)">劉哲志 (傳登)</option>
+        <option value="王太郎 (法磊)">王太郎 (法磊)</option>
+        <option value="傅重學 (法行)">傅重學 (法行)</option>
+        <option value="李錦芳 (法鍥)">李錦芳 (法鍥)</option>
+        <option value="張明月 (法評)">張明月 (法評)</option>
+        <option value="鄭淑瑛 (法柔)">鄭淑瑛 (法柔)</option>
+        <option value="陳靜茹 (法體)">陳靜茹 (法體)</option>
+        <option value="楊秀芳 (傳芍)">楊秀芳 (傳芍)</option>
+        <option value="李清花 (法曼)">李清花 (法曼)</option>
+        <option value="梁惠華 (法中)">梁惠華 (法中)</option>
+        <option value="吳雅雯 (法解)">吳雅雯 (法解)</option>
+        <option value="黃郁茹 (傳修)">黃郁茹 (傳修)</option>
+        <option value="陳碧雲 (法星)">陳碧雲 (法星)</option>
+        <option value="張惠菁 (傳易)">張惠菁 (傳易)</option>
+        <option value="王俐雯 (傳願)">王俐雯 (傳願)</option>
+        <option value="羅俐娟 (傳仰)">羅俐娟 (傳仰)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>2. 下一期意願：</label>
+      <div class="radio-group">
+        <label class="radio-option">
+          <input type="radio" name="intent" value="升班至研經班" required> 升班至「研經班」
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="intent" value="留在夜間高級班"> 保留在「夜間高級班」
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="intent" value="轉至其他班別"> 轉至其他班別
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="intent" value="暫停修習"> 暫停修習
+        </label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="note">3. 備註說明（選填，如轉班時段或原因）：</label>
+      <input type="text" id="note" placeholder="如：欲轉日間班 / 因工作請假...">
+    </div>
+
+    <button type="submit" class="submit-btn">確認送出</button>
+  </form>
+
+  <!-- 即時統計與紀錄視窗 -->
+  <div class="stats-section">
+    <h3>即時調查結果</h3>
+    <div class="stats-grid">
+      <div class="stat-card">升研經班：<span id="countUpgrade" class="stat-number">0</span> 人</div>
+      <div class="stat-card">保留高級班：<span id="countStay" class="stat-number">0</span> 人</div>
+      <div class="stat-card">轉班：<span id="countTransfer" class="stat-number">0</span> 人</div>
+      <div class="stat-card">暫停：<span id="countPause" class="stat-number">0</span> 人</div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>姓名 (法名)</th>
+          <th>意願</th>
+          <th>備註</th>
+        </tr>
+      </thead>
+      <tbody id="resultTableBody">
+        <!-- 動態加入寫入資料 -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  // 存放所有填寫結果
+  const records = {};
+
+  const form = document.getElementById('surveyForm');
+  const resultTableBody = document.getElementById('resultTableBody');
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById('studentName').value;
+    const intent = document.querySelector('input[name="intent"]:checked').value;
+    const note = document.getElementById('note').value;
+
+    // 儲存或更新紀錄
+    records[name] = { intent, note };
+
+    // 重新繪製介面
+    updateUI();
+
+    // 清空部分表單
+    form.reset();
+    alert(`已成功記錄 ${name} 學長的選擇！`);
+  });
+
+  function updateUI() {
+    // 1. 清空表格
+    resultTableBody.innerHTML = '';
+
+    // 2. 計數器
+    let countUpgrade = 0, countStay = 0, countTransfer = 0, countPause = 0;
+
+    // 3. 填入表格與計算數量
+    Object.keys(records).forEach(name => {
+      const data = records[name];
+      
+      if (data.intent === '升班至研經班') countUpgrade++;
+      else if (data.intent === '留在夜間高級班') countStay++;
+      else if (data.intent === '轉至其他班別') countTransfer++;
+      else if (data.intent === '暫停修習') countPause++;
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${name}</td>
+        <td>${data.intent}</td>
+        <td>${data.note || '-'}</td>
+      `;
+      resultTableBody.appendChild(tr);
+    });
+
+    // 4. 更新統計數字
+    document.getElementById('countUpgrade').textContent = countUpgrade;
+    document.getElementById('countStay').textContent = countStay;
+    document.getElementById('countTransfer').textContent = countTransfer;
+    document.getElementById('countPause').textContent = countPause;
+  }
+</script>
+
+</body>
+</html>
