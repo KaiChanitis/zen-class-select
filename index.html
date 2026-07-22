@@ -27,6 +27,7 @@
       padding: 25px;
       border-radius: 12px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      box-sizing: border-box;
     }
     h2 {
       text-align: center;
@@ -87,8 +88,8 @@
       cursor: pointer;
       margin-top: 10px;
     }
-    button.submit-btn:hover {
-      opacity: 0.9;
+    button.submit-btn:disabled {
+      background-color: #ccc;
     }
     .stats-section {
       margin-top: 30px;
@@ -135,7 +136,6 @@
   <h2>夜間高級班 升班意願調查</h2>
   <p class="subtitle">精進修行・福慧增長</p>
 
-  <!-- 填寫表單 -->
   <form id="surveyForm">
     <div class="form-group">
       <label for="studentName">1. 請選擇您的姓名：</label>
@@ -148,7 +148,7 @@
         <option value="傅重學 (法行)">傅重學 (法行)</option>
         <option value="李錦芳 (法鍥)">李錦芳 (法鍥)</option>
         <option value="張明月 (法評)">張明月 (法評)</option>
-        <option value="鄭淑媖 (法柔)">鄭淑媖 (法柔)</option>
+        <option value="鄭淑瑛 (法柔)">鄭淑瑛 (法柔)</option>
         <option value="陳靜茹 (法體)">陳靜茹 (法體)</option>
         <option value="楊秀芳 (傳芍)">楊秀芳 (傳芍)</option>
         <option value="李清花 (法曼)">李清花 (法曼)</option>
@@ -185,10 +185,9 @@
       <input type="text" id="note" placeholder="如：欲轉日間班 / 因工作請假...">
     </div>
 
-    <button type="submit" class="submit-btn">確認送出</button>
+    <button type="submit" id="submitBtn" class="submit-btn">確認送出</button>
   </form>
 
-  <!-- 即時統計與紀錄視窗 -->
   <div class="stats-section">
     <h3>即時調查結果</h3>
     <div class="stats-grid">
@@ -207,48 +206,80 @@
         </tr>
       </thead>
       <tbody id="resultTableBody">
-        <!-- 動態加入寫入資料 -->
       </tbody>
     </table>
   </div>
 </div>
 
 <script>
-  // 存放所有填寫結果
-  const records = {};
+  // 請將下方替換為您部署的 GAS Web App 網址
+  const GAS_URL = "YOUR_GAS_WEB_APP_URL";
 
   const form = document.getElementById('surveyForm');
+  const submitBtn = document.getElementById('submitBtn');
   const resultTableBody = document.getElementById('resultTableBody');
+
+  // 頁面載入時先拉取雲端資料
+  window.addEventListener('load', fetchCloudData);
+
+  function fetchCloudData() {
+    if (GAS_URL === "YOUR_GAS_WEB_APP_URL") return;
+    
+    fetch(GAS_URL)
+      .then(res => res.json())
+      .then(data => {
+        const records = {};
+        data.forEach(item => {
+          records[item.name] = { intent: item.intent, note: item.note };
+        });
+        updateUI(records);
+      })
+      .catch(err => console.error("讀取失敗", err));
+  }
 
   form.addEventListener('submit', function(e) {
     e.preventDefault();
+
+    if (GAS_URL === "YOUR_GAS_WEB_APP_URL") {
+      alert("請先設定 GAS 試算表連線網址！");
+      return;
+    }
 
     const name = document.getElementById('studentName').value;
     const intent = document.querySelector('input[name="intent"]:checked').value;
     const note = document.getElementById('note').value;
 
-    // 儲存或更新紀錄
-    records[name] = { intent, note };
+    submitBtn.disabled = true;
+    submitBtn.textContent = "資料傳送中...";
 
-    // 重新繪製介面
-    updateUI();
+    const payload = { name, intent, note };
 
-    // 清空部分表單
-    form.reset();
-    alert(`已成功記錄 ${name} 學長的選擇！`);
+    fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(res => {
+      alert(`已成功送出！感謝 ${name} 學長。`);
+      form.reset();
+      fetchCloudData(); // 重新整理雲端結果
+    })
+    .catch(err => {
+      alert("傳送失敗，請重試或聯繫管理者。");
+      console.error(err);
+    })
+    .finally(() => {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "確認送出";
+    });
   });
 
-  function updateUI() {
-    // 1. 清空表格
+  function updateUI(records) {
     resultTableBody.innerHTML = '';
-
-    // 2. 計數器
     let countUpgrade = 0, countStay = 0, countTransfer = 0, countPause = 0;
 
-    // 3. 填入表格與計算數量
     Object.keys(records).forEach(name => {
       const data = records[name];
-      
       if (data.intent === '升班至研經班') countUpgrade++;
       else if (data.intent === '留在夜間高級班') countStay++;
       else if (data.intent === '轉至其他班別') countTransfer++;
@@ -263,7 +294,6 @@
       resultTableBody.appendChild(tr);
     });
 
-    // 4. 更新統計數字
     document.getElementById('countUpgrade').textContent = countUpgrade;
     document.getElementById('countStay').textContent = countStay;
     document.getElementById('countTransfer').textContent = countTransfer;
