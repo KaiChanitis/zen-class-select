@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9/6 學員長講習出席調查表</title>
+    <style>
+        :root {
+            --ios-bg: #f2f2f7;
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --card-border: rgba(255, 255, 255, 0.4);
+            --primary-blue: #007aff;
+            --text-main: #1c1c1e;
+            --text-sub: #8e8e93;
+            --success-color: #34c759;
+            --warning-color: #ff9500;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--ios-bg);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 122, 255, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(52, 199, 89, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            padding: 20px 16px 40px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        /* Header Layout */
+        .header-card { text-align: center; }
+        .header-line1 { font-size: 1.25rem; font-weight: 700; margin-bottom: 6px; color: var(--text-main); }
+        .header-line2 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; color: var(--text-main); }
+        .header-line3 { font-size: 0.95rem; font-weight: 600; color: var(--primary-blue); }
+
+        /* Form Controls */
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; }
+        
+        .select-input, .input-text {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            outline: none;
+            color: var(--text-main);
+        }
+
+        /* Status Buttons */
+        .status-options { display: flex; gap: 10px; }
+        .status-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            background: rgba(255, 255, 255, 0.6);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        .status-btn.selected-attend {
+            background: var(--success-color);
+            color: white;
+            border-color: var(--success-color);
+            box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3);
+        }
+        .status-btn.selected-leave {
+            background: var(--warning-color);
+            color: white;
+            border-color: var(--warning-color);
+            box-shadow: 0 4px 12px rgba(255, 149, 0, 0.3);
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            background: var(--primary-blue);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(0, 122, 255, 0.3);
+        }
+
+        /* Stats & Records */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+        .stat-box { background: rgba(255, 255, 255, 0.5); padding: 12px; border-radius: 10px; text-align: center; }
+        .stat-number { font-size: 1.4rem; font-weight: 700; }
+        .stat-attend { color: var(--success-color); }
+        .stat-leave { color: var(--warning-color); }
+        .record-list { list-style: none; margin-top: 10px; max-height: 200px; overflow-y: auto; }
+        .record-item { padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header Section -->
+    <div class="glass-card header-card">
+        <div class="header-line1">9/6 學員長講習出席調查表</div>
+        <div class="header-line2">新一期夜間高級班學員長/副學員長</div>
+        <div class="header-line3">時間: 下午1:30-6:00</div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="glass-card">
+        <form id="attendanceForm">
+            <div class="form-group">
+                <label class="form-label" for="userNameSelect">選擇學員長姓名</label>
+                <select id="userNameSelect" class="select-input" required>
+                    <option value="" disabled selected>請選擇您的姓名...</option>
+                    <option value="詹凱涵_傳涵">詹凱涵_傳涵</option>
+                    <option value="林杰儒_法雍">林杰儒_法雍</option>
+                    <option value="劉哲志_傳登">劉哲志_傳登</option>
+                    <option value="劉榮倍_法泉">劉榮倍_法泉</option>
+                    <option value="傅重學_法行">傅重學_法行</option>
+                    <option value="李文漂">李文漂</option>
+                    <option value="張伯文_傳責">張伯文_傳責</option>
+                    <option value="詹馨鴻_傳譽">詹馨鴻_傳譽</option>
+                    <option value="李錦芳_法鍥">李錦芳_法鍥</option>
+                    <option value="張秝屏_法恭">張秝屏_法恭</option>
+                    <option value="王韻聆_法冰">王韻聆_法冰</option>
+                    <option value="陳佳誼">陳佳誼</option>
+                    <option value="吳雅雯_法解">吳雅雯_法解</option>
+                    <option value="楊秀芍_傳芍">楊秀芍_傳芍</option>
+                    <option value="黃郁茹_傳修">黃郁茹_傳修</option>
+                    <option value="陳碧雲_法星">陳碧雲_法星</option>
+                    <option value="王俐雯_傳願">王俐雯_傳願</option>
+                    <option value="羅俐娟_傳仰">羅俐娟_傳仰</option>
+                    <option value="李清花_法曼">李清花_法曼</option>
+                    <option value="梁惠華_法中">梁惠華_法中</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">出席狀態</label>
+                <div class="status-options">
+                    <div class="status-btn" onclick="selectStatus('參加', this)">參加</div>
+                    <div class="status-btn" onclick="selectStatus('需請假/會補課', this)">需請假/會補課</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="userNote">備註 (選填)</label>
+                <input type="text" id="userNote" class="input-text" placeholder="若需請假請註明原因">
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">提交回應</button>
+        </form>
+    </div>
+
+    <!-- Stats Card -->
+    <div class="glass-card">
+        <div style="font-weight: 600; font-size: 0.95rem;">即時統計數據</div>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div>參加</div>
+                <div class="stat-number stat-attend" id="attendCount">0</div>
+            </div>
+            <div class="stat-box">
+                <div>請假/補課</div>
+                <div class="stat-number stat-leave" id="leaveCount">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Records Card -->
+    <div class="glass-card">
+        <div style="font-weight: 600; font-size: 0.95rem;">最新填寫結果</div>
+        <ul class="record-list" id="recordList"></ul>
+    </div>
+</div>
+
+<script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbylGsLmPW11a7lDWTMQN9S6t2Sn-lTOqIO4MgGQ4l7pADQaor8Cq3lHk01kNHzJdbUk8A/exec";
+    let selectedStatusValue = "";
+
+    function selectStatus(val, element) {
+        selectedStatusValue = val;
+        document.querySelectorAll('.status-btn').forEach(btn => {
+            btn.classList.remove('selected-attend', 'selected-leave');
+        });
+
+        if (val === '參加') {
+            element.classList.add('selected-attend');
+        } else {
+            element.classList.add('selected-leave');
+        }
+    }
+
+    document.getElementById('attendanceForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const nameSelect = document.getElementById('userNameSelect');
+        const name = nameSelect.value;
+        const note = document.getElementById('userNote').value.trim();
+
+        if (!name) {
+            alert('請選擇您的姓名');
+            return;
+        }
+
+        if (!selectedStatusValue) {
+            alert('請選擇出席狀態');
+            return;
+        }
+
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerText = "提交中...";
+
+        const payload = { name: name, status: selectedStatusValue, note: note };
+
+        fetch(GAS_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        }).then(() => {
+            alert("提交成功！");
+            location.reload();
+        }).catch(err => {
+            alert("提交失敗，請重試");
+            submitBtn.disabled = false;
+            submitBtn.innerText = "提交回應";
+        });
+    });
+</script>
+
+</body>
+</html>
