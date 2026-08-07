@@ -54,7 +54,7 @@
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
         }
 
-        /* Header */
+        /* Header Layout */
         .header-card { text-align: center; }
         .header-line1 { font-size: 1.25rem; font-weight: 700; margin-bottom: 6px; color: var(--text-main); }
         .header-line2 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; color: var(--text-main); }
@@ -73,6 +73,8 @@
             font-size: 1rem;
             outline: none;
             color: var(--text-main);
+            appearance: none;
+            -webkit-appearance: none;
         }
 
         /* Status Buttons */
@@ -115,21 +117,30 @@
             font-weight: 600;
             cursor: pointer;
             box-shadow: 0 4px 14px rgba(0, 122, 255, 0.3);
+            transition: all 0.2s;
         }
+        .submit-btn:disabled { background: #b0b0b7; box-shadow: none; cursor: not-allowed; }
 
         /* Stats & Records */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
-        .stat-box { background: rgba(255, 255, 255, 0.5); padding: 12px; border-radius: 10px; text-align: center; }
-        .stat-number { font-size: 1.4rem; font-weight: 700; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .stat-box { background: rgba(255, 255, 255, 0.5); padding: 12px; border-radius: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.3); }
+        .stat-number { font-size: 1.6rem; font-weight: 700; }
         .stat-attend { color: var(--success-color); }
         .stat-leave { color: var(--warning-color); }
         
-        .record-list { list-style: none; margin-top: 10px; max-height: 220px; overflow-y: auto; }
-        .record-item { padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
-        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; color: white; }
+        .record-list { list-style: none; margin-top: 10px; max-height: 250px; overflow-y: auto; padding-right: 4px; }
+        .record-item { padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; }
+        .record-item:last-child { border-bottom: none; }
+        .badge { padding: 5px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; color: white; min-width: 65px; text-align: center; }
         .badge-attend { background: var(--success-color); }
         .badge-leave { background: var(--warning-color); }
-        .loading-text { text-align: center; color: var(--text-sub); font-size: 0.85rem; padding: 10px 0; }
+        .note-text { display: block; color: var(--text-sub); font-size: 0.85rem; margin-top: 2px; }
+        .loading-text { text-align: center; color: var(--text-sub); font-size: 0.9rem; padding: 20px 0; font-style: italic; }
+
+        /* 滾動條樣式 */
+        .record-list::-webkit-scrollbar { width: 5px; }
+        .record-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 5px; }
+        .record-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 5px; }
     </style>
 </head>
 <body>
@@ -190,14 +201,14 @@
 
     <!-- Stats Card -->
     <div class="glass-card">
-        <div style="font-weight: 600; font-size: 0.95rem;">即時統計數據</div>
+        <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-main);">即時統計人數</div>
         <div class="stats-grid">
             <div class="stat-box">
-                <div>參加</div>
+                <div style="font-size: 0.85rem; color: var(--text-sub); margin-bottom:4px;">參加</div>
                 <div class="stat-number stat-attend" id="attendCount">0</div>
             </div>
             <div class="stat-box">
-                <div>請假/補課</div>
+                <div style="font-size: 0.85rem; color: var(--text-sub); margin-bottom:4px;">請假/補課</div>
                 <div class="stat-number stat-leave" id="leaveCount">0</div>
             </div>
         </div>
@@ -205,9 +216,9 @@
 
     <!-- Live Records Card -->
     <div class="glass-card">
-        <div style="font-weight: 600; font-size: 0.95rem;">最新填寫結果</div>
+        <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-main); margin-bottom: 5px;">最新填寫結果</div>
         <ul class="record-list" id="recordList">
-            <li class="loading-text">載入資料中...</li>
+            <li class="loading-text">正在從 Google 試算表同步資料...</li>
         </ul>
     </div>
 </div>
@@ -229,7 +240,6 @@
         }
     }
 
-    // 載入歷史記錄
     function fetchRecords() {
         fetch(GAS_URL, {
             method: "GET",
@@ -244,16 +254,18 @@
             recordList.innerHTML = "";
 
             if (data.records && data.records.length > 0) {
-                // 將陣列反轉，最新的顯示在最上方
                 data.records.slice().reverse().forEach(item => {
                     const li = document.createElement('li');
                     li.className = 'record-item';
                     
                     const badgeClass = item.status === '參加' ? 'badge-attend' : 'badge-leave';
-                    const noteText = item.note ? ` (${item.note})` : '';
+                    const noteHtml = item.note ? `<span class="note-text">${item.note}</span>` : '';
 
                     li.innerHTML = `
-                        <span><strong>${item.name}</strong>${noteText}</span>
+                        <div>
+                            <strong>${item.name}</strong>
+                            ${noteHtml}
+                        </div>
                         <span class="badge ${badgeClass}">${item.status}</span>
                     `;
                     recordList.appendChild(li);
@@ -268,7 +280,6 @@
         });
     }
 
-    // 表單提交
     document.getElementById('attendanceForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -307,7 +318,6 @@
         });
     });
 
-    // 網頁載入時自動執行
     window.onload = fetchRecords;
 </script>
 
