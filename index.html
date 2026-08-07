@@ -54,7 +54,7 @@
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
         }
 
-        /* Header Layout */
+        /* Header */
         .header-card { text-align: center; }
         .header-line1 { font-size: 1.25rem; font-weight: 700; margin-bottom: 6px; color: var(--text-main); }
         .header-line2 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; color: var(--text-main); }
@@ -123,8 +123,13 @@
         .stat-number { font-size: 1.4rem; font-weight: 700; }
         .stat-attend { color: var(--success-color); }
         .stat-leave { color: var(--warning-color); }
-        .record-list { list-style: none; margin-top: 10px; max-height: 200px; overflow-y: auto; }
-        .record-item { padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; font-size: 0.9rem; }
+        
+        .record-list { list-style: none; margin-top: 10px; max-height: 220px; overflow-y: auto; }
+        .record-item { padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; color: white; }
+        .badge-attend { background: var(--success-color); }
+        .badge-leave { background: var(--warning-color); }
+        .loading-text { text-align: center; color: var(--text-sub); font-size: 0.85rem; padding: 10px 0; }
     </style>
 </head>
 <body>
@@ -145,7 +150,7 @@
                 <select id="userNameSelect" class="select-input" required>
                     <option value="" disabled selected>請選擇您的姓名...</option>
                     <option value="詹凱涵_傳涵">詹凱涵_傳涵</option>
-                    <option value="林杰儒_法雍">林杰儒_法雍</option>
+                    <option value="林傑儒_法雍">林傑儒_法雍</option>
                     <option value="劉哲志_傳登">劉哲志_傳登</option>
                     <option value="劉榮倍_法泉">劉榮倍_法泉</option>
                     <option value="傅重學_法行">傅重學_法行</option>
@@ -201,12 +206,14 @@
     <!-- Live Records Card -->
     <div class="glass-card">
         <div style="font-weight: 600; font-size: 0.95rem;">最新填寫結果</div>
-        <ul class="record-list" id="recordList"></ul>
+        <ul class="record-list" id="recordList">
+            <li class="loading-text">載入資料中...</li>
+        </ul>
     </div>
 </div>
 
 <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbylGsLmPW11a7lDWTMQN9S6t2Sn-lTOqIO4MgGQ4l7pADQaor8Cq3lHk01kNHzJdbUk8A/exec";
+    const GAS_URL = "https://script.google.com/macros/library/d/1Lpkp7tAVu3fTR4W_I40i_yYhcb7ECUXlTG_fklKfW3dmSYpRixhaHgm2/2";
     let selectedStatusValue = "";
 
     function selectStatus(val, element) {
@@ -222,6 +229,42 @@
         }
     }
 
+    // 載入資料庫記錄
+    function fetchRecords() {
+        fetch(GAS_URL)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('attendCount').innerText = data.attendCount || 0;
+                document.getElementById('leaveCount').innerText = data.leaveCount || 0;
+
+                const recordList = document.getElementById('recordList');
+                recordList.innerHTML = "";
+
+                if (data.records && data.records.length > 0) {
+                    // 反轉陣列，讓最新填寫的排在最上面
+                    data.records.reverse().forEach(item => {
+                        const li = document.createElement('li');
+                        li.className = 'record-item';
+                        
+                        const badgeClass = item.status === '參加' ? 'badge-attend' : 'badge-leave';
+                        const noteText = item.note ? ` (${item.note})` : '';
+
+                        li.innerHTML = `
+                            <span><strong>${item.name}</strong>${noteText}</span>
+                            <span class="badge ${badgeClass}">${item.status}</span>
+                        `;
+                        recordList.appendChild(li);
+                    });
+                } else {
+                    recordList.innerHTML = '<li class="loading-text">目前尚無填寫紀錄</li>';
+                }
+            })
+            .catch(err => {
+                document.getElementById('recordList').innerHTML = '<li class="loading-text">讀取紀錄失敗</li>';
+            });
+    }
+
+    // 表單提交
     document.getElementById('attendanceForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -259,6 +302,9 @@
             submitBtn.innerText = "提交回應";
         });
     });
+
+    // 網頁載入時自動執行抓取資料
+    window.onload = fetchRecords;
 </script>
 
 </body>
